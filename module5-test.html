@@ -1,0 +1,374 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17; --ink-soft:#4C5A44; --paper:#FAFAF7; --card:#FFFFFF; --line:#E3E1D8;
+    --green:#3C7A1E; --green-dark:#2C5A15; --green-tint:#EAF3E3;
+    --amber:#B4700A; --red:#B3261E; --red-tint:#FBEAE9;
+    --radius:10px; --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  #app, #app *{ box-sizing:border-box; }
+  #app{ font-family: Calibri, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); min-height:100%; padding:0; }
+  .shell{ max-width:640px; margin:0 auto; padding:28px 18px 60px; }
+  .brandbar{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brandbar .mark{ width:34px;height:34px;border-radius:8px; background:var(--green); display:flex;align-items:center;justify-content:center; color:#fff;font-weight:700;font-size:15px;flex:none; }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; }
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:15px; font-weight:600; padding:12px 18px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:background .12s ease, transform .05s ease; width:100%; }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  input[type=text]{ width:100%; font-family:inherit; font-size:15px; padding:11px 12px; border-radius:8px; border:1px solid var(--line); margin-bottom:14px; background:#fff; color:var(--ink); }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+  .eyebrow{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--green-dark); background:var(--green-tint); padding:4px 9px; border-radius:99px; margin-bottom:12px; }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:13px 14px; border-radius:8px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{ flex:none; width:22px;height:22px;border-radius:6px; background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700; display:flex;align-items:center;justify-content:center; }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+  .result-banner{ border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center; }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+  .critical-flag{ background:var(--red-tint); border:1px solid #EFC6C3; border-radius:8px; padding:12px 14px; margin-bottom:18px; font-size:13.5px; color:#7A1D18; }
+  .critical-flag b{ display:block; margin-bottom:3px; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; }
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .cat-name-crit::after{ content:" •"; color:var(--amber); font-weight:700; }
+  .missed-item{ border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px; }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+  .print-header{ display:none; }
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{ display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green); }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module5_Test_QuestionBank_and_ScoringKey_1.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Adjuster Meeting", q:`What's the key difference between a third-party inspector and a desk adjuster?`,
+      opts:[`They're the same role with different titles`,`The inspector documents the roof; the desk adjuster, who never saw the house, actually decides the claim`,`The inspector decides the claim; the desk adjuster just documents`,`The desk adjuster visits the home; the inspector works from an office`], correct:1,
+      coach:`The field inspector usually just photographs and measures. The decision gets made by a desk adjuster working only from that report — someone who was never on the roof.`},
+    {n:2, cat:"Adjuster Meeting", q:`What are the rep's three jobs at the adjuster meeting?`,
+      opts:[`Meet the adjuster, sign the contract, schedule production`,`Take measurements, build the estimate, collect payment`,`Be present, document the inspection, prep the customer`,`Negotiate scope, argue price, secure a same-day decision`], correct:2,
+      coach:`The adjuster meeting isn't a negotiation anymore. It's presence, documentation, and customer prep — you can't document an inspection or prep a customer on an outcome you didn't witness.`},
+    {n:3, cat:"Adjuster Meeting", q:`Why does the rep document the inspector, not just the roof?`,
+      opts:[`If the claim comes back shorted, an inadequate inspection is often the strongest argument for a re-inspection`,`It has no real use — it's just a habit reps are told to follow`,`The homeowner requires it for their personal records`,`It's required paperwork for iRoof's own insurance`], correct:0,
+      coach:`If an inspector spent 90 seconds up there and skipped a slope, that's ammunition later — but only if it was captured in the moment. You can't make that case after the fact.`},
+    {n:4, cat:"Adjuster Meeting", q:`What's the single most valuable skill at the adjuster meeting itself?`,
+      opts:[`Collecting the first check immediately after the meeting`,`Reading how the inspection went and prepping the customer for the range of outcomes`,`Convincing the field inspector to get on the roof`,`Getting the adjuster to commit to a number on the spot`], correct:1,
+      coach:`This is what reps get wrong most. You can usually tell which way an inspection is leaning — prepping the customer for that range means they're never blindsided by what comes back.`},
+    {n:5, cat:"Adjuster Meeting", q:`Who receives the carrier's decision and estimate first?`,
+      opts:[`The adjuster emails both simultaneously`,`The rep, who then forwards it to the homeowner`,`The office, who then briefs the rep`,`The homeowner, who then needs to forward it to the rep`], correct:3,
+      coach:`Carriers send the decision and estimate to the homeowner, not the rep. If the rep doesn't set that expectation up front, the deal can stall silently while it sits in the customer's inbox.`},
+    {n:6, cat:"Outcomes", q:`Why does the module call a partial approval "a door, not a disappointment"?`,
+      opts:[`Because partials are rare, which makes them more valuable`,`Because it pays more than a full approval typically would`,`Because the carrier has already admitted there's storm damage — leverage to push toward a full replacement`,`Because it always means the adjuster made an error`], correct:2,
+      coach:`A denial concedes nothing; a partial concedes damage. That admission is real leverage, and it's far easier to push a partial toward a full replacement than to overturn a flat denial.`},
+    {n:7, cat:"Scope Review", q:`What is a "scope," in this context?`,
+      opts:[`The territory a rep is assigned to work`,`The full list of work the carrier's estimate says they'll pay for — every line item, quantity, and price`,`The drone footage collected during the inspection`,`The homeowner's insurance policy limits`], correct:1,
+      coach:`Scope-completeness means confirming nothing that should be on that list is missing. A short scope re-fought later is what actually eats weeks on a claim.`},
+    {n:8, cat:"Scope Review", q:`Which of these do you specifically verify when reviewing a carrier's estimate?`,
+      opts:[`The rep's commission on the job`,`The homeowner's credit score`,`Measurements, all components present and priced, and the right charges included`,`The production crew's schedule availability`], correct:2,
+      coach:`Three checks every time: are the measurements right, is every component priced, and are the right charges (like O&P) included where they apply.`},
+    {n:9, cat:"Scope Review", q:`What does it generally take to justify O&P (profit) on a roofing claim?`,
+      opts:[`O&P only applies to full roof replacements, never partials`,`Any claim over a certain dollar threshold`,`O&P is automatic on every insurance job`,`The job generally needs to involve three or more different trades`], correct:3,
+      coach:`Carriers push back hard on profit in roofing. It's really only justified when three or more trades are involved — fight for it when that's true, don't expect it when it isn't.`},
+    {n:10, cat:"Scope Review", q:`What's the most common item carriers leave off an estimate entirely?`,
+      opts:[`Ridge cap`,`Valley metal`,`Flashing`,`Drip edge`], correct:3,
+      coach:`Drip edge is the recurring miss — the module is explicit that the question isn't whether the quantity is right, it's whether it's on the estimate at all.`},
+    {n:11, cat:"Scope Review", q:`When a rep finds a miss in the carrier's scope, what do they actually do about it?`,
+      opts:[`Catch it and flag it — the supplement process, not the rep, handles the paperwork`,`Ignore it if the dollar amount is small`,`Wait until the build is finished to bring it up`,`Correct the Xactimate estimate themselves on the spot`], correct:0,
+      coach:`Catching the miss is the skill. The rep isn't expected to build the corrected estimate — that's the office's job once the supplement is flagged.`},
+    {n:12, cat:"Supplements", q:`What are the two big things a rep is expected to catch and flag for a supplement?`,
+      opts:[`Spaced decking requiring a re-deck, and rotten wood that becomes a homeowner cost`,`Shingle brand and warranty length`,`Permit fees and city inspection scheduling`,`Paint color mismatches and gutter style`], correct:0,
+      coach:`Both should already be flagged from the Visit-1 attic check. Spaced decking is a covered supplement; rotten wood isn't covered and becomes the homeowner's cost — set that expectation early.`},
+    {n:13, cat:"Supplements", q:`How does a supplement actually get submitted?`,
+      opts:[`The homeowner submits it directly to their own insurer`,`Mostly by email — the rep states what was missed and the adjuster corrects or approves it in writing`,`Through a formal in-person hearing with the carrier`,`It's automatically flagged by Acculynx with no rep involvement`], correct:1,
+      coach:`It's simpler than it sounds — a specific email naming what was left off, and the adjuster either updates the estimate or approves it by reply for the office to build in at the end.`},
+    {n:14, cat:"Supplements", q:`Why does the module say to always get an add "in writing"?`,
+      opts:[`It's just a courtesy to the adjuster`,`It's a state legal requirement for every claim`,`Without it there's no proof of approval, and the office can't build what isn't documented`,`It speeds up the homeowner's final payment automatically`], correct:2,
+      coach:`No email, no proof — the office can't build an item into the final estimate that was never documented as approved. A vague ask also just starts a back-and-forth that costs weeks.`},
+    {n:15, cat:"Contract & Money", q:`What's the standard money rule at contract signing?`,
+      opts:[`Collect the deductible at signing, the first check at completion`,`Collect both the first check and the deductible at signing`,`Collect nothing until the job is fully finished`,`Collect the first check at signing, the deductible at completion`], correct:3,
+      critical:true,
+      coach:`First check at signing gets them on the schedule; deductible at completion, once the job is finished. That order doesn't flex without sales manager approval.`},
+    {n:16, cat:"Contract & Money", q:`What should a rep do if a situation calls for deviating from the standard money rule?`,
+      opts:[`Escalate to the sales manager for approval — reps don't negotiate money on their own`,`Split the difference between the two standard collection points`,`Ask the homeowner what they'd prefer and go with that`,`Use their own best judgment and adjust on the spot`], correct:0,
+      critical:true,
+      coach:`Money is explicitly called out as where a new rep gets the company in trouble. Any deviation from the standard goes to the sales manager — never freelanced.`},
+    {n:17, cat:"Payment Timeline", q:`What does ACV actually represent?`,
+      opts:[`The full replacement cost with no deductions`,`The total of both insurance checks combined`,`RCV minus depreciation — the "used" value of the old roof`,`The homeowner's out-of-pocket deductible`], correct:2,
+      coach:`ACV is what the carrier pays first, and it's smaller than the full job value because depreciation for the roof's age has already been subtracted.`},
+    {n:18, cat:"Payment Timeline", q:`What is "recoverable depreciation"?`,
+      opts:[`The held-back amount released after the work is completed and proven — the second check`,`The portion of the deductible that's refundable`,`A fee iRoof charges for expedited claims`,`Money the homeowner permanently loses`], correct:0,
+      coach:`It's not lost money — it's held back and released once the roof is actually replaced, often paid directly to iRoof. A customer who wasn't told this panics when the first check looks small.`},
+    {n:19, cat:"Hand-Off to Production", q:`Why is there no formal hand-off meeting between sales and production?`,
+      opts:[`Production doesn't need any information from the sales visit`,`Everything production needs is already documented in Acculynx — notes, scope, supplement emails, attic findings`,`Production contacts the homeowner directly to ask questions`,`The sales manager briefs production verbally instead`], correct:1,
+      coach:`Production never talked to the customer — they know only what's in Acculynx. A flagged attic issue or code-upgrade determination means no surprise on the roof; an unflagged one means the job stalls.`},
+    {n:20, cat:"Denied Claims", q:`What's the rep's actual role when a claim comes back denied?`,
+      opts:[`Personally litigate and negotiate the fight to overturn it`,`Tell the homeowner there's nothing more that can be done`,`Immediately drop the account and move to the next lead`,`Recognize the fork, produce the evidence, present the two options, and hand into a manager-led fight`], correct:3,
+      coach:`Denial fights are manager-led, not solo. The rep's job is spotting the fork, bringing the evidence (inspection documentation, a Hail Maps storm report), and presenting fight-or-retail — not litigating it alone.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Adjuster Meeting": 80,
+    "Outcomes": 100,
+    "Scope Review": 80,
+    "Supplements": 80,
+    "Contract & Money": 100,
+    "Payment Timeline": 100,
+    "Hand-Off to Production": 100,
+    "Denied Claims": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 5 — The Claim Track")}
+      <div class="card">
+        <h1>Module 5 Knowledge &amp; Judgment Test</h1>
+        <p>20 questions on the adjuster meeting, scope review, supplements, and the money rules from contract signing through final payment. You need 85% overall to pass, and Contract &amp; Money requires a perfect score — the module's own text calls it out as where a new rep puts the company at risk.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+    const criticalMisses = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0, critical:false};
+      byCat[item.cat].total++;
+      if(item.critical) byCat[item.cat].critical = true;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach, critical: !!item.critical});
+        if(item.critical) criticalMisses.push(item.cat);
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold, critical:c.critical};
+    });
+
+    return {
+      repName, timestamp: new Date().toISOString(),
+      overallCorrect, overallTotal: QUESTIONS.length, overallPct, overallPass,
+      categoryResults, missed,
+      criticalFlag: criticalMisses.length>0,
+      criticalCategories: [...new Set(criticalMisses)]
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const criticalBlock = result.criticalFlag ?
+      `<div class="critical-flag"><b>Flagged for a manager conversation</b>A miss in a critical category (${result.criticalCategories.map(esc).join(", ")}) needs to be reviewed regardless of overall score — this is where a new rep can put the company at risk.</div>` : ``;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td class="${c.critical?'cat-name-crit':''}">${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}${m.critical? ' · Critical':''}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 5 Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        ${criticalBlock}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){ backBtn.onclick = ()=>{ qIndex--; render(); }; }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){ restartBtn.onclick = ()=>{ screen="start"; render(); }; }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){ printBtn.onclick = ()=>{ window.print(); }; }
+  }
+
+  render();
+})();
+</script>

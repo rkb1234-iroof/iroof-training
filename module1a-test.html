@@ -1,0 +1,360 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17; --ink-soft:#4C5A44; --paper:#FAFAF7; --card:#FFFFFF; --line:#E3E1D8;
+    --green:#3C7A1E; --green-dark:#2C5A15; --green-tint:#EAF3E3;
+    --amber:#B4700A; --red:#B3261E; --red-tint:#FBEAE9;
+    --radius:10px; --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  #app, #app *{ box-sizing:border-box; }
+  #app{ font-family: Calibri, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); min-height:100%; padding:0; }
+  .shell{ max-width:640px; margin:0 auto; padding:28px 18px 60px; }
+  .brandbar{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brandbar .mark{ width:34px;height:34px;border-radius:8px; background:var(--green); display:flex;align-items:center;justify-content:center; color:#fff;font-weight:700;font-size:15px;flex:none; }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; }
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:15px; font-weight:600; padding:12px 18px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:background .12s ease, transform .05s ease; width:100%; }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  input[type=text]{ width:100%; font-family:inherit; font-size:15px; padding:11px 12px; border-radius:8px; border:1px solid var(--line); margin-bottom:14px; background:#fff; color:var(--ink); }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+  .eyebrow{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--green-dark); background:var(--green-tint); padding:4px 9px; border-radius:99px; margin-bottom:12px; }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:13px 14px; border-radius:8px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{ flex:none; width:22px;height:22px;border-radius:6px; background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700; display:flex;align-items:center;justify-content:center; }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+  .result-banner{ border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center; }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .missed-item{ border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px; }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+  .print-header{ display:none; }
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{ display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green); }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module1A_Test_QuestionBank_and_ScoringKey.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Hail Maps", q:`Which tool is your canvassing record — where doors knocked and storm data live?`,
+      opts:[`Acculynx`,`Roofle`,`iRoofing`,`Interactive Hail Maps`], correct:3,
+      coach:`Interactive Hail Maps is your territory and storm-documentation system in one — every door, every no-answer, every re-knock lives here. Acculynx picks up once there's an actual deal, not before.`},
+    {n:2, cat:"Acculynx", q:`Which tool holds job notes once a deal exists, and is what production works from during hand-off?`,
+      opts:[`Acculynx`,`Xactimate`,`Interactive Hail Maps`,`Roofle`], correct:0,
+      coach:`If it isn't in Acculynx, it doesn't exist. Production never spoke to the customer — they work entirely from what the rep put in the notes.`},
+    {n:3, cat:"iRoofing", q:`Besides Roofle, which other tool can also confirm a square count when you dispute a carrier's number?`,
+      opts:[`Interactive Hail Maps`,`Xactimate`,`Acculynx`,`iRoofing`], correct:3,
+      coach:`Both Roofle and iRoofing can check a square count fast without a full remeasure — useful when you disagree with a carrier's number on an approved claim.`},
+    {n:4, cat:"iRoofing", q:`When do you actually use iRoofing?`,
+      opts:[`At the kitchen table, during the visit`,`At the office, when you're building your own estimate and need real measurements`,`To read a carrier's claim decision`,`To log canvassing doors`], correct:1,
+      coach:`iRoofing is back-office work — not a visit tool. The drone documents damage on-site; iRoofing measures off-site when the rep is the one building the estimate.`},
+    {n:5, cat:"Tool ID", q:`Which of these is explicitly NOT a visit tool — meaning you don't reach for it at the kitchen table?`,
+      opts:[`iRoofing`,`The CPF`,`Roofle`,`The drone`], correct:0,
+      coach:`iRoofing is back-office work. The drone documents on-site, Roofle quotes and closes retail at the table, and the CPF gets signed at the table — but measurements come later, off-site.`},
+    {n:6, cat:"Xactimate", q:`What format do carriers write their estimates in, and what do you do with it?`,
+      opts:[`Roofle — you present it to the homeowner`,`iRoofing — you review squares in it`,`Xactimate — you read it for scope completeness, you don't build in it`,`Acculynx — you build it fully`], correct:2,
+      coach:`Nearly every carrier writes their estimate in Xactimate. Reading it line by line for scope completeness is a rep skill you learn with your manager — building estimates happens in Acculynx, and the office does that build.`},
+    {n:7, cat:"Hail Maps", q:`Where does your storm-documentation proof come from when you're fighting a denial?`,
+      opts:[`An iRoofing measurement sheet`,`A screenshot of Acculynx job notes`,`A Roofle quote printout`,`A printed storm report from Interactive Hail Maps`], correct:3,
+      coach:`Interactive Hail Maps prints a storm report for an address — date, path, hail size, wind speed. That's third-party proof to counter a carrier's "no storm damage" call.`},
+    {n:8, cat:"Roofle", q:`Roofle runs two credit checks when a customer finances. Which one is legally required, and when?`,
+      opts:[`Two soft pulls; neither is required by law`,`A soft pull to pre-qualify, then a hard pull required by law once they pick a plan`,`One hard pull only, up front`,`A soft pull that silently becomes a hard pull without telling the customer`], correct:1,
+      coach:`The first pull is soft and pre-qualifies with no score impact. Once the customer picks a plan and moves forward, a hard pull is required by law to formally extend the financing.`},
+    {n:9, cat:"Roofle", q:`How are inbound leads from homeowners who quote their own roof through Roofle distributed to reps?`,
+      opts:[`Exclusively to the top-performing rep each month`,`Assigned only to brand-new reps as training leads`,`Round-robin, based on sales earned — a bonus on top of your own knocking, never a substitute for it`,`First-come-first-served to whoever is in the office`], correct:2,
+      coach:`Roofle-sourced leads are earned and distributed round-robin based on sales — extra volume on top of your own canvassing, not a replacement for knocking doors.`},
+    {n:10, cat:"Tool ID", q:`What's the one distinction the module says to never mix up?`,
+      opts:[`Interactive Hail Maps is for managers only; Acculynx is for reps only`,`Interactive Hail Maps replaced Acculynx`,`The two systems are interchangeable`,`Interactive Hail Maps is canvassing (doors, knocks, storms); Acculynx is jobs (notes, contracts, estimates)`], correct:3,
+      coach:`Two systems, two jobs. Doors and knocks go in Hail Maps. Job notes, contracts, and estimates go in Acculynx. Mixing them up is the one thing the module explicitly warns against.`},
+    {n:11, cat:"Acculynx", q:`For a cash job or approved supplement, where do the iRoofing measurements ultimately get built into an estimate?`,
+      opts:[`Roofle`,`Acculynx`,`Inside iRoofing itself`,`Xactimate`], correct:1,
+      coach:`iRoofing pulls the measurements off-site; the actual estimate gets built in Acculynx. Measurements and estimate-building are two separate steps in two separate tools.`},
+    {n:12, cat:"Acculynx", q:`When does iRoof build its own estimate directly, rather than working from a carrier's Xactimate?`,
+      opts:[`Only when an adjuster has already written the scope`,`Only when Roofle is unavailable`,`On cash jobs, or approved supplements`,`Never — all estimates come from iRoofing directly with no Acculynx step`], correct:2,
+      coach:`Cash jobs and approved supplements are the two cases where iRoof builds its own estimate — no adjuster-written Xactimate to work from, so the rep's iRoofing measurements feed an Acculynx-built estimate.`},
+    {n:13, cat:"Acculynx", q:`What marks the formal hand-off from sales to production?`,
+      opts:[`Acculynx — the job moves to Approved status once the contract is signed and money is collected`,`A phone call from the rep to the production manager`,`A summary email from the sales manager`,`A printed Hail Maps storm report`], correct:0,
+      coach:`There's no separate hand-off meeting — the job moving to Approved status in Acculynx, once signed and money's collected, is the hand-off. The rep's notes are what production runs on from there.`},
+    {n:14, cat:"Xactimate", q:`When reviewing a carrier's Xactimate for scope completeness, what are you specifically checking for?`,
+      opts:[`The rep's commission calculation for the job`,`The homeowner's payment history`,`Agreement on square and linear-foot counts, and confirming every component is included — catching what's missing`,`The company's total revenue for the month`], correct:2,
+      coach:`Scope review means agreeing with the carrier's counts and catching missing components — drip edge, additional structures, and the rest. It's the difference between a clean claim and one that stalls.`},
+    {n:15, cat:"Hail Maps", q:`Which tool do you use to decide where the opportunity is — which territory to work first?`,
+      opts:[`Interactive Hail Maps — storm dates and canvassing history`,`Roofle — retail quotes and financing options`,`Xactimate — carrier estimate line items`,`Acculynx — job notes and contract history`], correct:0,
+      coach:`Hail Maps shows the storm data that tells you and your manager where the opportunity actually is, before a single door gets knocked.`},
+    {n:16, cat:"Roofle", q:`On a retail (no insurance) close, which tool runs the quote and presents good / better / best?`,
+      opts:[`Acculynx`,`Xactimate`,`Roofle`,`iRoofing`], correct:2,
+      coach:`Roofle is the instant retail quote tool — enter the address, present all three tiers honestly, and the customer chooses. It's the engine behind the one-visit retail close.`},
+    {n:17, cat:"Personal Tools", q:`What does the Weekly Activity Tracker help a rep do?`,
+      opts:[`Track weekly funnel activity to see exactly where opportunity is being lost`,`Track adjuster contact info for open insurance claims`,`Track financing approval status for retail customers`,`Track the storm path and hail size for a specific address`], correct:0,
+      coach:`The Weekly Activity Tracker is the rep's own funnel log — where doors, conversations, and closes are leaking. The other options describe what Hail Maps, Roofle, and Acculynx track instead — knowing the difference matters, since the fix for a leaking funnel starts with knowing where to look.`},
+    {n:18, cat:"Acculynx", q:`Why does the module say "if it isn't in Acculynx, it doesn't exist"?`,
+      opts:[`Because Acculynx automatically deletes anything not entered within 24 hours`,`Because production never spoke to the customer and works entirely from what's written there`,`Because it's a legal requirement for every job regardless of size`,`Because Acculynx is the only system reps are allowed to log into`], correct:1,
+      coach:`Production picks up a job with zero context beyond what's in Acculynx. A rep's notes are the entire hand-off — nothing verbal carries over.`},
+    {n:19, cat:"Xactimate", q:`Who typically builds an Xactimate estimate — the rep, or the carrier?`,
+      opts:[`Roofle builds it during the retail close`,`Acculynx auto-generates it from drone footage`,`The rep builds it fresh on every job`,`The carrier writes it; the rep reads and reviews it for completeness`], correct:3,
+      coach:`Reps read Xactimate, they don't build in it. It's the format the carrier hands back their decision in — reviewing it for completeness is the rep skill, not authoring it from scratch.`},
+    {n:20, cat:"Sequencing", q:`In the tool sequence for an insurance job, what happens right after the claim is filed and the CPF is signed?`,
+      opts:[`You collect the deductible on the spot`,`You read the carrier's decision in Xactimate once it comes back`,`You immediately build an estimate in iRoofing`,`You start canvassing the next street`], correct:1,
+      coach:`The sequence runs: knock (Hail Maps) → inspect (drone) → file and sign (CPF, notes start in Acculynx) → read the carrier's decision (Xactimate) once it's back. Money and estimates come later in the process, not immediately after filing.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Hail Maps": 80,
+    "Acculynx": 80,
+    "iRoofing": 100,
+    "Tool ID": 100,
+    "Xactimate": 80,
+    "Roofle": 80,
+    "Personal Tools": 100,
+    "Sequencing": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 1A — The Tools")}
+      <div class="card">
+        <h1>Module 1A Knowledge &amp; Judgment Test</h1>
+        <p>20 questions on the five core tools — Hail Maps, Acculynx, iRoofing, Xactimate, and Roofle — and when each one actually gets used. You need 85% overall to pass, and several categories require a perfect score since there's no room for a rep to be fuzzy on which tool does what.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0};
+      byCat[item.cat].total++;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach});
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold};
+    });
+
+    return {
+      repName, timestamp: new Date().toISOString(),
+      overallCorrect, overallTotal: QUESTIONS.length, overallPct, overallPass,
+      categoryResults, missed
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td>${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 1A Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){ backBtn.onclick = ()=>{ qIndex--; render(); }; }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){ restartBtn.onclick = ()=>{ screen="start"; render(); }; }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){ printBtn.onclick = ()=>{ window.print(); }; }
+  }
+
+  render();
+})();
+</script>

@@ -1,0 +1,380 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17; --ink-soft:#4C5A44; --paper:#FAFAF7; --card:#FFFFFF; --line:#E3E1D8;
+    --green:#3C7A1E; --green-dark:#2C5A15; --green-tint:#EAF3E3;
+    --amber:#B4700A; --red:#B3261E; --red-tint:#FBEAE9;
+    --radius:10px; --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  #app, #app *{ box-sizing:border-box; }
+  #app{ font-family: Calibri, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); min-height:100%; padding:0; }
+  .shell{ max-width:640px; margin:0 auto; padding:28px 18px 60px; }
+  .brandbar{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brandbar .mark{ width:34px;height:34px;border-radius:8px; background:var(--green); display:flex;align-items:center;justify-content:center; color:#fff;font-weight:700;font-size:15px;flex:none; }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; }
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:15px; font-weight:600; padding:12px 18px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:background .12s ease, transform .05s ease; width:100%; }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  input[type=text]{ width:100%; font-family:inherit; font-size:15px; padding:11px 12px; border-radius:8px; border:1px solid var(--line); margin-bottom:14px; background:#fff; color:var(--ink); }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+  .eyebrow{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--green-dark); background:var(--green-tint); padding:4px 9px; border-radius:99px; margin-bottom:12px; }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:13px 14px; border-radius:8px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{ flex:none; width:22px;height:22px;border-radius:6px; background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700; display:flex;align-items:center;justify-content:center; }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+  .result-banner{ border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center; }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+  .critical-flag{ background:var(--red-tint); border:1px solid #EFC6C3; border-radius:8px; padding:12px 14px; margin-bottom:18px; font-size:13.5px; color:#7A1D18; }
+  .critical-flag b{ display:block; margin-bottom:3px; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; }
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .cat-name-crit::after{ content:" •"; color:var(--amber); font-weight:700; }
+  .missed-item{ border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px; }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+  .print-header{ display:none; }
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{ display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green); }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module3_Test_QuestionBank_and_ScoringKey.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Mindset", q:`What does the module say is the one input you completely control?`,
+      opts:[`Whether a homeowner is home`,`How many doors you knock`,`The weather`,`Whether the carrier approves the claim`], correct:1,
+      coach:`You don't control who's home or what the carrier decides. Doors knocked is the one input entirely in your hands — on a bad day, more doors is the only fix that actually works.`},
+    {n:2, cat:"Mindset", q:`What's "the whole job in one line," per the module?`,
+      opts:[`Work only the best neighborhoods and skip the rest`,`Sell as many CPFs as possible regardless of damage found`,`Knock enough doors, run the arc honestly, and the money takes care of itself`,`Follow up until the customer asks you to stop`], correct:2,
+      coach:`That's the entire job distilled: enough doors, an honest arc, and the income follows. Everything else in the module supports that one line.`},
+    {n:3, cat:"Territory", q:`Who assigns your territory when you start?`,
+      opts:[`Your sales manager`,`You choose it yourself from day one`,`Whichever rep claims it first`,`Corporate, based on zip code population`], correct:0,
+      coach:`Your sales manager assigns your area early on — where you knock matters as much as how you knock, and a great rep in a dead neighborhood loses to an average rep in a fresh storm area.`},
+    {n:4, cat:"Territory", q:`Why is the area you're sent to already "qualified" before you knock a single door?`,
+      opts:[`It's been cleared against a confirmed storm date`,`It's the closest area to the office`,`It's the highest-income zip code in the region`,`It has the fewest competitors currently working it`], correct:0,
+      coach:`You're never knocking at random — the area's already been cleared against a confirmed storm date, which is why you know the date of loss before you even sit down at the table.`},
+    {n:5, cat:"Reading a Neighborhood", q:`Which of these is a sign a neighborhood is genuinely "live"?`,
+      opts:[`Mostly rental properties`,`Other roofs being replaced, dumpsters, yard signs, tarps`,`A competitor's sign on every third lawn`,`Every roof already looks brand new`], correct:1,
+      coach:`Roofs actively going up means claims are being paid there. A competitor's sign on every lawn is the opposite signal — it means you're late, not that the area is fresh.`},
+    {n:6, cat:"Working an Area", q:`Why does the module say to work a neighborhood densely instead of scattering across town?`,
+      opts:[`It reduces mileage reimbursement costs`,`It's required by the sales manager's GPS tracking`,`Efficiency, credibility ("I'm working with your neighbors"), and momentum`,`It prevents overlapping with other reps' assigned territory`], correct:2,
+      coach:`Dense work cuts windshield time, makes "I'm working with several of your neighbors" true and disarming, and builds momentum — one signed roof in a cul-de-sac makes the next four easier.`},
+    {n:7, cat:"The Funnel", q:`Roughly what percentage of doors knocked turn into an actual conversation?`,
+      opts:[`About 20%`,`About 50%`,`About 80%`,`About 5%`], correct:0,
+      coach:`About 20% of doors turn into a conversation — most of the time nobody's home or nobody answers. That's normal, not a reflection on the rep.`},
+    {n:8, cat:"The Funnel", q:`Which step in the funnel is described as "the carrier's call, not yours"?`,
+      opts:[`Inspection to CPF`,`Conversation to inspection`,`Knock to conversation`,`CPF to approved job`], correct:3,
+      coach:`CPF to approved job runs around 40% and is entirely the carrier's decision. The other steps are on the rep's door pitch and table presentation, which is exactly what the rep can control and improve.`},
+    {n:9, cat:"Qualifying a Good Week", q:`Which of these clears a good week on its own?`,
+      opts:[`1 contract signed with no other activity`,`50 doors knocked with no CPFs signed`,`5 CPFs signed`,`A single flown inspection`], correct:2,
+      coach:`Any one of three bars clears the week: 100+ doors, 5 CPFs signed, or 2 contracts signed. 50 doors falls short of the 100-door bar, and 1 contract falls short of the 2-contract bar.`},
+    {n:10, cat:"Qualifying a Good Week", q:`If activity is there but CPFs are low for the week, what does that typically point to?`,
+      opts:[`A normal lag between a signed claim and a contract`,`Something off at the door itself — the qualify or the ask`,`Nothing — it's entirely outside the rep's control`,`An activity problem — get back out on doors`], correct:1,
+      coach:`When the doors are being knocked but CPFs aren't following, the module points to the qualify or the ask at the door — not more activity, and not something outside the rep's control.`},
+    {n:11, cat:"Tracking", q:`In the Weekly Activity Tracker breakdown, "lots of conversations, few inspections" points to a problem where?`,
+      opts:[`The table presentation`,`Timing — knocking when nobody's home`,`Simply not getting out enough`,`The door pitch`], correct:3,
+      coach:`Conversations happening but inspections not following points back to the door pitch — go back to the script. Timing issues show up as few conversations, not few inspections.`},
+    {n:12, cat:"Working the Doors", q:`What should you do when you knock and nobody answers?`,
+      opts:[`Leave a door hanger and log the address`,`Mark it as a dead lead and never return`,`Skip the house and move straight to the next street`,`Wait at the door until someone comes home`], correct:0,
+      coach:`Never walk away from a no-answer empty-handed. The hanger tells them iRoof was there, and logging the address puts it on your mail list and re-knock list — it's not dead, just empty.`},
+    {n:13, cat:"Working the Doors", q:`Which house is the one house the module says to actually skip?`,
+      opts:[`One where nobody appears to be home`,`A rental property`,`One with an obviously brand-new roof`,`One with a competitor's sign in the yard`], correct:2,
+      coach:`An obviously brand-new roof is the only skip. Everything else — rentals, competitor signs, no-answers — still gets knocked; you can't see hail damage from the sidewalk.`},
+    {n:14, cat:"Referrals", q:`At how many specific moments does the module say to ask for a referral, on every job?`,
+      opts:[`Six`,`Three`,`Two`,`Four`], correct:3,
+      critical:true,
+      coach:`Four moments: at signing, when the claim gets approved, on install day, and at final payment. Asking at all four — not just once — is what builds a real referral habit.`},
+    {n:15, cat:"Referrals", q:`What's the correct way to ask for a referral, per the module's two rules?`,
+      opts:[`Hint at it so you don't come across as pushy`,`Ask for a specific person by name, directly`,`Wait for the customer to bring it up on their own`,`Ask a general favor — "do you know anybody?"`], correct:1,
+      critical:true,
+      coach:`Ask directly for a specific person — "who on this street?" — not a general favor. A hint gets nothing, and a general ask just gets "I'll think about it."`},
+    {n:16, cat:"Referrals", q:`What does the module say about paying for referrals?`,
+      opts:[`iRoof pays a standard referral bonus per lead`,`Only top-performing reps qualify for paid referral bonuses`,`iRoof does not run a paid referral program`,`Referral pay is left to each sales manager's discretion`], correct:2,
+      critical:true,
+      coach:`iRoof doesn't pay for referrals. You ask because you earned it through the work you did, not because you bought it — this matters for what a rep can promise or offer at the door.`},
+    {n:17, cat:"Lead Sources", q:`Why is a jobsite described as the best door you'll knock all week?`,
+      opts:[`It counts double toward your weekly activity bars`,`The homeowner already has your phone number from the mailer`,`iRoof requires it as part of the standard warranty process`,`Your truck and crew are visibly there, and the neighbors took the same storm`], correct:3,
+      coach:`You're not a stranger claiming to be a roofer — you're visibly one, thirty feet away, with neighbors who already took the same storm and are already curious before you knock.`},
+    {n:18, cat:"Lead Sources", q:`What are company (Roofle) leads, per the module?`,
+      opts:[`Earned and distributed round-robin based on sales — a bonus, not a plan`,`Assigned equally to every rep regardless of performance`,`A dependable primary lead source no rep should knock without`,`Only available to reps who've been at iRoof over a year`], correct:0,
+      coach:`Company leads are earned and round-robin based on sales — a bonus on top of your own knocking. No rep has ever hit their number waiting on them.`},
+    {n:19, cat:"Follow-Up", q:`What's the minimum number of follow-up touches the module sets as the floor?`,
+      opts:[`Three`,`One`,`Ten`,`Five`], correct:3,
+      critical:true,
+      coach:`Five is the floor, not the target — about 80% of sales happen between the fifth and twelfth contact, and most salespeople quit long before that point.`},
+    {n:20, cat:"Follow-Up", q:`Where does canvassing follow-up (doors, no-answers, come-back-laters) get logged, versus job notes?`,
+      opts:[`Both go in Acculynx`,`Canvassing goes in Interactive Hail Maps; job notes go in Acculynx`,`Canvassing goes in Acculynx; job notes go in Interactive Hail Maps`,`Both go in Interactive Hail Maps`], correct:1,
+      critical:true,
+      coach:`Two systems, two jobs. Every door, no-answer, and come-back-later goes in Hail Maps — that's the territory record. Once there's an actual deal moving, the notes shift to Acculynx.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Mindset": 100,
+    "Territory": 100,
+    "Reading a Neighborhood": 100,
+    "Working an Area": 100,
+    "The Funnel": 100,
+    "Qualifying a Good Week": 100,
+    "Tracking": 100,
+    "Working the Doors": 100,
+    "Referrals": 80,
+    "Lead Sources": 100,
+    "Follow-Up": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 3 — Generating Your Own Leads")}
+      <div class="card">
+        <h1>Module 3 Knowledge &amp; Judgment Test</h1>
+        <p>20 questions on territory, the funnel, tracking your own numbers, and building a real referral and follow-up habit. You need 85% overall to pass, and several categories require a perfect score — two of them (Referrals and Follow-Up) are flagged critical since they tie to compliance and pipeline health.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+    const criticalMisses = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0, critical:false};
+      byCat[item.cat].total++;
+      if(item.critical) byCat[item.cat].critical = true;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach, critical: !!item.critical});
+        if(item.critical) criticalMisses.push(item.cat);
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold, critical:c.critical};
+    });
+
+    return {
+      repName, timestamp: new Date().toISOString(),
+      overallCorrect, overallTotal: QUESTIONS.length, overallPct, overallPass,
+      categoryResults, missed,
+      criticalFlag: criticalMisses.length>0,
+      criticalCategories: [...new Set(criticalMisses)]
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const criticalBlock = result.criticalFlag ?
+      `<div class="critical-flag"><b>Flagged for a manager conversation</b>A miss in a critical category (${result.criticalCategories.map(esc).join(", ")}) needs to be reviewed regardless of overall score — these tie to compliance and pipeline health.</div>` : ``;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td class="${c.critical?'cat-name-crit':''}">${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}${m.critical? ' · Critical':''}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 3 Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        ${criticalBlock}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){ backBtn.onclick = ()=>{ qIndex--; render(); }; }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){ restartBtn.onclick = ()=>{ screen="start"; render(); }; }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){ printBtn.onclick = ()=>{ window.print(); }; }
+  }
+
+  render();
+})();
+</script>

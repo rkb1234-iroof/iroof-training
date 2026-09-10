@@ -1,0 +1,378 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17; --ink-soft:#4C5A44; --paper:#FAFAF7; --card:#FFFFFF; --line:#E3E1D8;
+    --green:#3C7A1E; --green-dark:#2C5A15; --green-tint:#EAF3E3;
+    --amber:#B4700A; --red:#B3261E; --red-tint:#FBEAE9;
+    --radius:10px; --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  #app, #app *{ box-sizing:border-box; }
+  #app{ font-family: Calibri, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); min-height:100%; padding:0; }
+  .shell{ max-width:640px; margin:0 auto; padding:28px 18px 60px; }
+  .brandbar{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brandbar .mark{ width:34px;height:34px;border-radius:8px; background:var(--green); display:flex;align-items:center;justify-content:center; color:#fff;font-weight:700;font-size:15px;flex:none; }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; }
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:15px; font-weight:600; padding:12px 18px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:background .12s ease, transform .05s ease; width:100%; }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  input[type=text]{ width:100%; font-family:inherit; font-size:15px; padding:11px 12px; border-radius:8px; border:1px solid var(--line); margin-bottom:14px; background:#fff; color:var(--ink); }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+  .eyebrow{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--green-dark); background:var(--green-tint); padding:4px 9px; border-radius:99px; margin-bottom:12px; }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:13px 14px; border-radius:8px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{ flex:none; width:22px;height:22px;border-radius:6px; background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700; display:flex;align-items:center;justify-content:center; }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+  .result-banner{ border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center; }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+  .critical-flag{ background:var(--red-tint); border:1px solid #EFC6C3; border-radius:8px; padding:12px 14px; margin-bottom:18px; font-size:13.5px; color:#7A1D18; }
+  .critical-flag b{ display:block; margin-bottom:3px; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; }
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .cat-name-crit::after{ content:" •"; color:var(--amber); font-weight:700; }
+  .missed-item{ border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px; }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+  .print-header{ display:none; }
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{ display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green); }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module2_Test_QuestionBank_and_ScoringKey.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Roof Parts", q:`Which roof part is the inside angle where two slopes meet and funnel water — a common damage and leak spot?`,
+      opts:[`Hip`,`Rake`,`Ridge`,`Valley`], correct:3,
+      coach:`A valley is where two slopes meet on the inside and funnel water — that concentration makes it a common damage and leak spot. A hip is the outside angle; the ridge is the top peak.`},
+    {n:2, cat:"Roof Parts", q:`Which term describes the horizontal top edge where two slopes meet at the peak?`,
+      opts:[`Rake`,`Hip`,`Eave`,`Ridge`], correct:3,
+      coach:`The ridge is the horizontal top edge at the peak. The eave is the lower edge where gutters hang, and the rake is the slanted edge on a gable end.`},
+    {n:3, cat:"Roof Parts", q:`What's the term for the slanted edge on the end of a gable roof?`,
+      opts:[`Hip`,`Rake`,`Eave`,`Valley`], correct:1,
+      coach:`The rake is the slanted edge on a gable end. The eave is the lower edge where gutters hang — a different edge entirely.`},
+    {n:4, cat:"Layers", q:`What sits directly under the shingles and over the decking?`,
+      opts:[`Drip edge`,`Ridge cap`,`Flashing`,`Underlayment`], correct:3,
+      coach:`Underlayment — felt or synthetic — sits between the decking and the shingles. Flashing, ridge cap, and drip edge are all metal components, not layers.`},
+    {n:5, cat:"Layers", q:`Older homes may have this type of decking, which requires a re-deck when installing a new roof.`,
+      opts:[`Spaced (plank) decking`,`Synthetic decking`,`Plywood decking`,`OSB decking`], correct:0,
+      coach:`Spaced (plank) decking has gaps between boards and has to be decked over — a re-deck — to meet code for a new roof. OSB and plywood are the standard modern decking types.`},
+    {n:6, cat:"Metal / Penetrations", q:`Which metal component is frequently left off a carrier's estimate entirely?`,
+      opts:[`Ridge cap`,`Valley metal`,`Drip edge`,`Flashing`], correct:2,
+      coach:`Drip edge is the metal most often missing from a carrier's estimate — one of the details you have to catch and name yourself.`},
+    {n:7, cat:"Metal / Penetrations", q:`Which of these is a soft target for hail damage?`,
+      opts:[`The underlayment`,`The decking`,`Ridge cap shingles`,`Vents and boots`], correct:3,
+      coach:`Vents, vent caps, and pipe boots are soft targets — exposed and easily dented or damaged by hail. Decking and underlayment are underneath the shingles, not exposed to impact.`},
+    {n:8, cat:"Shingles", q:`On which shingle type does hail damage typically show as bruises or soft spots rather than obvious bald patches?`,
+      opts:[`3-tab shingles`,`Architectural (dimensional) shingles`,`Both equally`,`Neither — hail never bruises shingles`], correct:1,
+      coach:`Architectural shingles are thicker and layered, so hail often shows as a bruise or soft spot rather than the obvious granule loss you'd see on a flat 3-tab.`},
+    {n:9, cat:"Shingles", q:`What should you do if you run into a slate or tile roof?`,
+      opts:[`Inspect and quote it the same as asphalt`,`Document it the same way you would a 3-tab`,`Talk to your manager before going any further`,`Assume it's not stormable and skip the house`], correct:2,
+      coach:`Slate and tile aren't a standard iRoof job. Loop in your manager before inspecting or quoting one yourself.`},
+    {n:10, cat:"Hail Damage", q:`What's the number-one thing to remember about hail damage?`,
+      opts:[`It's always visible from the ground`,`It only appears on architectural shingles`,`It's random — no pattern`,`It's always paired with wind damage`], correct:2,
+      coach:`Hail is random. It doesn't fall in straight lines, so scattered, no-pattern hits are your biggest clue that what you're looking at is real.`},
+    {n:11, cat:"Honesty / Mistakes", q:`What is "ghost damage," and why does it matter?`,
+      opts:[`Storm damage that's too faint to photograph clearly`,`Damage that only shows up in certain lighting conditions`,`A term for old hail damage on aging roofs`,`Blisters, scuffs, or manufacturing defects that get mistaken for storm damage`], correct:3,
+      critical:true,
+      coach:`Ghost damage is blistering, scuffing, or a manufacturing defect that isn't storm-related at all. Calling it damage anyway is one of the mistakes that sinks a new rep's credibility.`},
+    {n:12, cat:"Hail Damage", q:`In this territory, around what hail size do you reliably start seeing claimable damage?`,
+      opts:[`Only hail over two inches counts`,`A quarter inch and up`,`Around an inch and up`,`Three inches and up`], correct:2,
+      coach:`Around an inch and up is where claimable damage reliably shows up here — though older, more worn shingles can show damage from smaller hail too.`},
+    {n:13, cat:"Wind Damage", q:`What's the defining pattern of wind damage?`,
+      opts:[`Directional — lining up along edges, ridges, and storm-facing slopes`,`Identical to a hail damage pattern`,`Concentrated in the center of the roof`,`Random and scattered with no pattern`], correct:0,
+      coach:`Wind is a tearing force from one direction, so the damage lines up along edges, ridges, and the slopes the storm blew against — the opposite of hail's randomness.`},
+    {n:14, cat:"Wind Damage", q:`A shingle that got lifted and bent back, leaving a permanent weak point, describes what?`,
+      opts:[`A bruised shingle`,`A creased or folded shingle`,`A blistered shingle`,`A curled shingle`], correct:1,
+      coach:`A creased or folded shingle got lifted by wind and bent back — even if it laid flat again, the crease is a permanent weak point. Blistering and curling are age tells; bruising is a hail tell.`},
+    {n:15, cat:"Age / Wear", q:`Which of these points to age and wear, not storm damage?`,
+      opts:[`Uniform granule loss across the whole roof`,`Random, scattered granule loss with no pattern`,`Fresh, dark, unweathered dents in the metal`,`Directional creasing along the roof's edges`], correct:0,
+      critical:true,
+      coach:`Uniform granule loss — evenly worn and thin across the whole roof — is an age tell. Random loss points to hail, directional creasing points to wind, and fresh dark dents point to a recent storm.`},
+    {n:16, cat:"Age / Wear", q:`Why does calling normal wear a storm claim sink a new rep's reputation so fast?`,
+      opts:[`Adjusters catch it instantly and stop trusting everything that rep brings after`,`Homeowners rarely notice the difference`,`It's a minor issue adjusters usually overlook`,`It only affects commission, not credibility`], correct:0,
+      critical:true,
+      coach:`Adjusters see it instantly. Once they catch one inflated call from a rep, they stop trusting every claim that rep brings them — a reputation cost that follows you long after that one job.`},
+    {n:17, cat:"Soft Metals / Collateral", q:`Why does dented soft metal matter when documenting a claim?`,
+      opts:[`Adjusters generally ignore soft metal evidence`,`It only matters on architectural shingle roofs`,`It's hard proof a storm actually hit the property, corroborating the roof damage`,`It's optional context that doesn't affect the claim`], correct:2,
+      coach:`Shingles can be argued about; a dented gutter can't. Soft metal is hard proof a storm hit this address — it corroborates the roof damage and helps establish direction and size.`},
+    {n:18, cat:"Soft Metals / Collateral", q:`You find what looks like damage on the roof, but the surrounding soft metal is perfectly clean. What should you do?`,
+      opts:[`Recheck — clean metal is a red flag you may be looking at wear, not storm damage`,`Document it as storm damage anyway`,`Assume the metal was recently replaced and move on`,`Ignore the metal since it's unrelated to the roof`], correct:0,
+      coach:`Clean metal on a roof with "damage" is a red flag. A storm big enough to hurt the roof usually leaves a mark on the soft metal too — recheck before calling it.`},
+    {n:19, cat:"Attic", q:`What does spaced (plank) decking in the attic mean for the job, and why catch it early?`,
+      opts:[`It requires an immediate structural repair before any inspection can continue`,`It requires a re-deck, since code requires it be decked over to install a new roof`,`It requires a separate permit that delays the whole job`,`Nothing — it's purely cosmetic and doesn't affect the job`], correct:1,
+      coach:`Spaced decking has to be decked over to meet code for a new roof — a re-deck. Spotting it early means it's never a surprise later in the process.`},
+    {n:20, cat:"Honesty / Mistakes", q:`What's the correct response to borderline, marginal damage?`,
+      opts:[`Call your manager and let them decide before touching the roof`,`Show what's real and let it stand — don't inflate it into something it isn't`,`Inflate it so the claim has a better chance of approval`,`Skip documenting it entirely since it's not clearly damage`], correct:1,
+      critical:true,
+      coach:`Marginal damage still gets shown honestly — you document what's real and let it stand. Over-calling it to strengthen a case is one of the mistakes that costs a rep their credibility.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Roof Parts": 80,
+    "Layers": 100,
+    "Metal / Penetrations": 100,
+    "Shingles": 100,
+    "Hail Damage": 100,
+    "Honesty / Mistakes": 100,
+    "Wind Damage": 100,
+    "Age / Wear": 100,
+    "Soft Metals / Collateral": 100,
+    "Attic": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 2 — Roof & Damage Fundamentals")}
+      <div class="card">
+        <h1>Module 2 Knowledge &amp; Judgment Test</h1>
+        <p>20 questions on roof anatomy, layers, and telling real storm damage from age, wear, and ghost damage. You need 85% overall to pass, and several categories require a perfect score — two of them (Age/Wear and Honesty/Mistakes) are flagged critical since they tie directly to liability and credibility on a claim.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+    const criticalMisses = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0, critical:false};
+      byCat[item.cat].total++;
+      if(item.critical) byCat[item.cat].critical = true;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach, critical: !!item.critical});
+        if(item.critical) criticalMisses.push(item.cat);
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold, critical:c.critical};
+    });
+
+    return {
+      repName, timestamp: new Date().toISOString(),
+      overallCorrect, overallTotal: QUESTIONS.length, overallPct, overallPass,
+      categoryResults, missed,
+      criticalFlag: criticalMisses.length>0,
+      criticalCategories: [...new Set(criticalMisses)]
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const criticalBlock = result.criticalFlag ?
+      `<div class="critical-flag"><b>Flagged for a manager conversation</b>A miss in a critical category (${result.criticalCategories.map(esc).join(", ")}) needs to be reviewed regardless of overall score — these tie directly to liability and credibility on a claim.</div>` : ``;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td class="${c.critical?'cat-name-crit':''}">${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}${m.critical? ' · Critical':''}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 2 Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        ${criticalBlock}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){ backBtn.onclick = ()=>{ qIndex--; render(); }; }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){ restartBtn.onclick = ()=>{ screen="start"; render(); }; }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){ printBtn.onclick = ()=>{ window.print(); }; }
+  }
+
+  render();
+})();
+</script>

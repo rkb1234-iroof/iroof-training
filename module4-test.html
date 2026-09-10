@@ -1,0 +1,379 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17; --ink-soft:#4C5A44; --paper:#FAFAF7; --card:#FFFFFF; --line:#E3E1D8;
+    --green:#3C7A1E; --green-dark:#2C5A15; --green-tint:#EAF3E3;
+    --amber:#B4700A; --red:#B3261E; --red-tint:#FBEAE9;
+    --radius:10px; --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  #app, #app *{ box-sizing:border-box; }
+  #app{ font-family: Calibri, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); min-height:100%; padding:0; }
+  .shell{ max-width:640px; margin:0 auto; padding:28px 18px 60px; }
+  .brandbar{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brandbar .mark{ width:34px;height:34px;border-radius:8px; background:var(--green); display:flex;align-items:center;justify-content:center; color:#fff;font-weight:700;font-size:15px;flex:none; }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; }
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:15px; font-weight:600; padding:12px 18px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:background .12s ease, transform .05s ease; width:100%; }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  input[type=text]{ width:100%; font-family:inherit; font-size:15px; padding:11px 12px; border-radius:8px; border:1px solid var(--line); margin-bottom:14px; background:#fff; color:var(--ink); }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+  .eyebrow{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--green-dark); background:var(--green-tint); padding:4px 9px; border-radius:99px; margin-bottom:12px; }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:13px 14px; border-radius:8px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{ flex:none; width:22px;height:22px;border-radius:6px; background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700; display:flex;align-items:center;justify-content:center; }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+  .result-banner{ border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center; }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+  .critical-flag{ background:var(--red-tint); border:1px solid #EFC6C3; border-radius:8px; padding:12px 14px; margin-bottom:18px; font-size:13.5px; color:#7A1D18; }
+  .critical-flag b{ display:block; margin-bottom:3px; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; }
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .cat-name-crit::after{ content:" •"; color:var(--amber); font-weight:700; }
+  .missed-item{ border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px; }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+  .print-header{ display:none; }
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{ display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green); }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module4_Test_QuestionBank_and_ScoringKey.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Mindset", q:`What does the module say an objection actually is?`,
+      opts:[`A signal to argue your case harder`,`A question in disguise — an invitation to keep going`,`A sign the homeowner truly doesn't care`,`A rejection you should back away from`], correct:1,
+      coach:`An objection means the homeowner is still engaged and telling you what's standing between them and yes. The real rejection is silence — someone who truly doesn't care just shuts the door.`},
+    {n:2, cat:"Mindset", q:`What are the two things new reps get wrong when they hear an objection?`,
+      opts:[`They argue, or they fold`,`They talk too fast, or too slow`,`They over-explain, or they under-explain`,`They ask too many questions, or too few`], correct:0,
+      coach:`Arguing turns it into a fight you can't win alongside keeping the customer. Folding at the first no means quitting on a deal that hadn't even started.`},
+    {n:3, cat:"Diagnosis", q:`Every objection comes down to one of three things. Which of these is NOT one of them?`,
+      opts:[`Money`,`Trust`,`Timing`,`Need`], correct:2,
+      coach:`The three are trust, need, and money. Timing isn't one of the categories — the words homeowners use almost always map back to one of those three, even when they sound like something else.`},
+    {n:4, cat:"Diagnosis", q:`"I need to talk to my wife" at the kitchen table (not the door) usually signals which category?`,
+      opts:[`Need`,`It's meaningless filler with no real category`,`Trust`,`Money`], correct:2,
+      coach:`At the table this is legitimate — but it's rooted in trust: a decision-maker got missed earlier, and closing someone who can't decide alone doesn't work.`},
+    {n:5, cat:"Framework", q:`What are the three steps of the objection framework, in order?`,
+      opts:[`Ask → Agree → Answer`,`Answer → Agree → Ask`,`Answer → Ask → Agree`,`Agree → Answer → Ask`], correct:3,
+      coach:`Agree first to take the fight out of it, answer the real objection in two or three sentences, then ask again. Skipping the order — especially the final ask — is the most common new-rep mistake.`},
+    {n:6, cat:"Framework", q:`What's the actual purpose of the "Agree" step?`,
+      opts:[`To agree that the homeowner is right and drop the offer`,`To buy time before you have an answer ready`,`To set up a bigger ask later in the conversation`,`To take the fight out of it — agreeing with their right to feel that way, not the objection itself`], correct:3,
+      coach:`You're not agreeing with the objection — you're agreeing with their right to feel that way. That half-second of agreement disarms them before you even answer.`},
+    {n:7, cat:"Framework", q:`What's the soft probe line used to find out what an objection is really about?`,
+      opts:[`"Can you explain your reasoning?"`,`"Are you sure about that?"`,`"Really? What makes you say that?"`,`"Is that your final answer?"`], correct:2,
+      coach:`Delivered warm and curious, this line gets homeowners to tell you the real objection themselves — delivered flat or defensive, the same words shut them down instead.`},
+    {n:8, cat:"Framework", q:`Why does the module say to "always ask twice"?`,
+      opts:[`Because the objection is the first no, and the answer plus the ask is the real second try`,`Because homeowners often mishear the first ask`,`Because asking only once is considered rude`,`Because it's a required step for the CPF process`], correct:0,
+      coach:`The objection is the first no. Answering it and asking again is the second try — and that's where most yeses actually come from. Stopping after the answer just hands the silence back to them.`},
+    {n:9, cat:"At the Door", q:`What's your only goal when you hit an objection at the door?`,
+      opts:[`Get the CPF signed on the spot`,`Get a firm decision-maker commitment`,`Get the drone in the air`,`Get a referral before you leave`], correct:2,
+      coach:`At the door, the ask is small on purpose — just get the drone up. Objections here are reflexes to a stranger interrupting their evening, not real decisions yet.`},
+    {n:10, cat:"At the Door", q:`"I need to talk to my husband/wife" at the door is usually treated as what?`,
+      opts:[`A stall, since all you're asking to do is fly a drone`,`A hard no you should respect immediately`,`A real decision-maker issue requiring a return visit`,`A trust objection requiring the full framework`], correct:0,
+      coach:`At the door there's nothing to decide yet — you're only asking to take pictures. If the drone finds damage, that's when the decision-maker question becomes real, handled later at the sit-down.`},
+    {n:11, cat:"Money / Deductible", q:`What should you never do when a homeowner worries about their insurance rates going up?`,
+      opts:[`Acknowledge it's not something they caused`,`Promise their rates won't be affected`,`Offer to fly the drone anyway`,`Tell them the drone inspection is free`], correct:1,
+      critical:true,
+      coach:`You're not their insurance agent and don't know their policy. A promise about rates you can't keep is how a rep gets a furious customer and a canceled job later.`},
+    {n:12, cat:"At the Table", q:`"I want to get a couple more bids" on an insurance job — what's the core of the correct answer?`,
+      opts:[`The insurance company sets the price, so there's nothing to shop`,`Offer to beat any competitor's price`,`Badmouth the competition to create doubt`,`Agree and encourage them to shop around first`], correct:0,
+      coach:`On an insurance job the carrier writes the estimate, so every roofer gets paid the same number. What actually varies is quality of work and who fights hardest for the claim — never badmouth the competition to make that point.`},
+    {n:13, cat:"At the Table", q:`Why is "I need to talk to my spouse" handled differently at the table than at the door?`,
+      opts:[`It means you should get the CPF signed without them`,`It's still just a stall, handle it exactly the same way`,`It means the deal is effectively dead`,`It's now legitimate — a decision-maker got missed earlier, so you set up a joint meeting`], correct:3,
+      coach:`By the table, this is real — a missed decision-maker, not a stall. Don't try to close someone who can't decide alone; get both people in the room together instead.`},
+    {n:14, cat:"About the CPF", q:`What actually triggers the $1,500 CPF fee?`,
+      opts:[`Every adjuster visit, regardless of outcome`,`Winning the claim, and the homeowner then taking the job elsewhere or not doing the roof`,`Signing the CPF itself`,`Any homeowner who simply changes their mind`], correct:1,
+      coach:`The fee only comes into play if iRoof wins the claim and the homeowner then hands the job to someone else or skips the repair — it protects the free work done up front. If iRoof does the roof, it never comes up.`},
+    {n:15, cat:"Money / Deductible", q:`What's the only out-of-pocket cost the module says a homeowner has on an insurance job?`,
+      opts:[`Their deductible`,`The $1,500 CPF fee`,`The full retail price, minus whatever insurance covers`,`A flat inspection fee`], correct:0,
+      critical:true,
+      coach:`The deductible is the whole out-of-pocket cost — insurance covers the rest. That's the entire answer to "what's this going to cost me?"`},
+    {n:16, cat:"Money / Deductible", q:`A competitor offers to "eat" the homeowner's deductible. What does that actually require them to do?`,
+      opts:[`Simply discount their own labor rate`,`Nothing unusual — it's a standard, legal practice`,`Submit an inflated bill to insurance that doesn't match what was actually charged`,`Absorb the cost personally with no effect on the paperwork`], correct:2,
+      critical:true,
+      coach:`"Eating" the deductible means billing insurance for more than was actually charged — a fake bill with the homeowner's name on the claim. iRoof never does this, and the module is explicit that it's a red flag about the other company, not a deal.`},
+    {n:17, cat:"Money / Deductible", q:`A homeowner wants to keep the insurance check and not replace the roof. What's the correct move?`,
+      opts:[`Report it to the carrier immediately`,`Refuse to let them do that — it's not allowed`,`Tell them it's fraud and walk away`,`Explain the trade-offs honestly (smaller check, future coverage risk) and let them decide — it's their legal right`], correct:3,
+      critical:true,
+      coach:`Keeping the first check without repairing is legal — it's their money and their call. Your job is making sure they understand what they're giving up, not talking them out of it or refusing them.`},
+    {n:18, cat:"Money / Deductible", q:`What's the actual legal line the module draws around keeping the insurance check?`,
+      opts:[`Both are fraud unless the rep reports it`,`Keeping the check without doing the work is fraud either way`,`Both are legal as long as the homeowner tells their insurer`,`Keeping the check is legal; claiming the work was done to collect depreciation when it wasn't is fraud`], correct:3,
+      critical:true,
+      coach:`Keeping the check and not repairing is legal — the homeowner just forfeits the depreciation and risks future coverage issues. Saying the work was done to collect that depreciation when it wasn't is the fraud line, and a rep never helps anyone cross it.`},
+    {n:19, cat:"When to Walk", q:`Which of these is a non-negotiable reason to walk away from a deal entirely?`,
+      opts:[`A homeowner who says "not right now"`,`Being asked to waive a deductible or falsify a bill`,`A homeowner who needs to talk to their spouse`,`A homeowner who wants a second bid`], correct:1,
+      critical:true,
+      coach:`Waiving a deductible or falsifying a bill isn't negotiable — you walk immediately, politely, no exceptions. No commission is worth a license, a reputation, or the company.`},
+    {n:20, cat:"When to Walk", q:`How many times should you push through an objection before treating a firm, repeated no as final?`,
+      opts:[`Once, then stop no matter what`,`Twice, if you have a real answer the second time`,`Zero — respect the first no immediately`,`Indefinitely, until they ask you to leave`], correct:1,
+      critical:true,
+      coach:`Push through the first no always, and the second if you actually have something new to say. After that, stop — the rep who won't leave gets a complaint, not a deal.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Mindset": 100,
+    "Diagnosis": 100,
+    "Framework": 80,
+    "At the Door": 100,
+    "Money / Deductible": 80,
+    "At the Table": 100,
+    "About the CPF": 100,
+    "When to Walk": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 4 — Handling Objections")}
+      <div class="card">
+        <h1>Module 4 Knowledge &amp; Judgment Test</h1>
+        <p>20 questions on the objection framework, the door-vs-table distinction, and money/deductible judgment calls. You need 85% overall to pass, and several categories require a perfect score — two of them (Money/Deductible and When to Walk) are flagged critical since they carry the program's highest legal and license risk.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+    const criticalMisses = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0, critical:false};
+      byCat[item.cat].total++;
+      if(item.critical) byCat[item.cat].critical = true;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach, critical: !!item.critical});
+        if(item.critical) criticalMisses.push(item.cat);
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold, critical:c.critical};
+    });
+
+    return {
+      repName, timestamp: new Date().toISOString(),
+      overallCorrect, overallTotal: QUESTIONS.length, overallPct, overallPass,
+      categoryResults, missed,
+      criticalFlag: criticalMisses.length>0,
+      criticalCategories: [...new Set(criticalMisses)]
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const criticalBlock = result.criticalFlag ?
+      `<div class="critical-flag"><b>Flagged for a manager conversation</b>A miss in a critical category (${result.criticalCategories.map(esc).join(", ")}) needs to be reviewed regardless of overall score — this module carries the program's highest legal and license risk.</div>` : ``;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td class="${c.critical?'cat-name-crit':''}">${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}${m.critical? ' · Critical':''}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 4 Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        ${criticalBlock}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){ backBtn.onclick = ()=>{ qIndex--; render(); }; }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){ restartBtn.onclick = ()=>{ screen="start"; render(); }; }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){ printBtn.onclick = ()=>{ window.print(); }; }
+  }
+
+  render();
+})();
+</script>
