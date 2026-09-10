@@ -1,0 +1,511 @@
+<div id="app"></div>
+<style>
+  :root{
+    --ink:#1F2A17;
+    --ink-soft:#4C5A44;
+    --paper:#FAFAF7;
+    --card:#FFFFFF;
+    --line:#E3E1D8;
+    --green:#3C7A1E;
+    --green-dark:#2C5A15;
+    --green-tint:#EAF3E3;
+    --amber:#B4700A;
+    --red:#B3261E;
+    --red-tint:#FBEAE9;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(31,42,23,0.06), 0 4px 16px rgba(31,42,23,0.05);
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+  #app, #app *{ box-sizing:border-box; }
+  #app{
+    font-family: Calibri, "Segoe UI", Arial, sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    min-height:100%;
+    padding:0;
+  }
+  .shell{
+    max-width:640px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+  }
+  .brandbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .brandbar .mark{
+    width:34px;height:34px;border-radius:8px;
+    background:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;flex:none;
+  }
+  .brandbar .name{ font-weight:700; font-size:15px; letter-spacing:0.2px; color:var(--ink); }
+  .brandbar .sub{ font-size:12.5px; color:var(--ink-soft); }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px 22px;
+  }
+
+  h1{ font-size:21px; margin:0 0 6px; line-height:1.25; }
+  p{ margin:0 0 14px; line-height:1.5; font-size:14.5px; color:var(--ink-soft); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family:inherit; font-size:15px; font-weight:600;
+    padding:12px 18px; border-radius:8px; border:1px solid transparent;
+    cursor:pointer; transition:background .12s ease, transform .05s ease;
+    width:100%;
+  }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-dark); }
+  .btn-primary:disabled{ background:#B9C7AD; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:#F1F0EA; }
+  .btn:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+
+  input[type=text]{
+    width:100%; font-family:inherit; font-size:15px;
+    padding:11px 12px; border-radius:8px; border:1px solid var(--line);
+    margin-bottom:14px; background:#fff; color:var(--ink);
+  }
+  input:focus-visible{ outline:2px solid var(--green-dark); outline-offset:1px; }
+  label.field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
+
+  /* progress */
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-row .count{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+  .progress-track{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .progress-fill{ height:100%; background:var(--green); transition:width .25s ease; }
+
+  .eyebrow{
+    display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.5px;
+    text-transform:uppercase; color:var(--green-dark); background:var(--green-tint);
+    padding:4px 9px; border-radius:99px; margin-bottom:12px;
+  }
+  .qtext{ font-size:18px; font-weight:600; line-height:1.4; margin-bottom:18px; }
+
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .option{
+    text-align:left; display:flex; gap:10px; align-items:flex-start;
+    padding:13px 14px; border-radius:8px; border:1.5px solid var(--line);
+    background:#fff; cursor:pointer; font-family:inherit; font-size:14.5px; color:var(--ink);
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .option:hover{ border-color:#B9C7AD; }
+  .option.selected{ border-color:var(--green); background:var(--green-tint); }
+  .option .letter{
+    flex:none; width:22px;height:22px;border-radius:6px;
+    background:var(--line); color:var(--ink-soft); font-size:12px; font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .option.selected .letter{ background:var(--green); color:#fff; }
+  .option:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
+
+  .nav-row{ display:flex; gap:10px; }
+  .nav-row .btn-ghost{ flex:0 0 auto; width:auto; padding-left:16px; padding-right:16px; }
+
+  /* results */
+  .result-banner{
+    border-radius:var(--radius); padding:20px; margin-bottom:20px; text-align:center;
+  }
+  .result-banner.pass{ background:var(--green-tint); border:1px solid #C6DDB4; }
+  .result-banner.fail{ background:var(--red-tint); border:1px solid #EFC6C3; }
+  .result-banner .label{ font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+  .result-banner.pass .label{ color:var(--green-dark); }
+  .result-banner.fail .label{ color:var(--red); }
+  .result-banner .score{ font-size:36px; font-weight:700; margin:4px 0 2px; }
+  .result-banner .sub{ font-size:13px; color:var(--ink-soft); margin:0; }
+
+  .critical-flag{
+    background:var(--red-tint); border:1px solid #EFC6C3; border-radius:8px;
+    padding:12px 14px; margin-bottom:18px; font-size:13.5px; color:#7A1D18;
+  }
+  .critical-flag b{ display:block; margin-bottom:3px; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; }
+
+  table.cat-table{ width:100%; border-collapse:collapse; margin-bottom:22px; font-size:13.5px; }
+  table.cat-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.cat-table td{ padding:9px 8px; border-bottom:1px solid #F0EFE9; vertical-align:top; }
+  .chip{ display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .chip.pass{ background:var(--green-tint); color:var(--green-dark); }
+  .chip.fail{ background:var(--red-tint); color:var(--red); }
+  .cat-name-crit::after{ content:" •"; color:var(--amber); font-weight:700; }
+
+  .missed-item{
+    border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:12px;
+  }
+  .missed-item .mi-cat{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:5px; }
+  .missed-item .mi-q{ font-weight:600; font-size:14.5px; margin-bottom:8px; }
+  .missed-item .mi-correct{ font-size:13px; color:var(--green-dark); font-weight:600; margin-bottom:6px; }
+  .missed-item .mi-coach{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+
+  .section-title{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin:26px 0 12px; }
+
+  .print-header{ display:none; }
+
+  @media print{
+    .no-print{ display:none !important; }
+    .shell{ max-width:100%; padding:0; }
+    .card{ box-shadow:none; border:none; padding:0; }
+    #app{ background:#fff; }
+    .brandbar{ display:none; }
+    .print-header{
+      display:block; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--green);
+    }
+    .print-header .t1{ font-weight:700; font-size:18px; color:var(--green-dark); }
+    .print-header .t2{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+    .missed-item{ break-inside: avoid; }
+    table.cat-table{ break-inside: avoid; }
+  }
+</style>
+
+<script>
+(function(){
+
+  // ---------- Question bank (source: Module1_Test_QuestionBank_and_ScoringKey.xlsx) ----------
+  const QUESTIONS = [
+    {n:1, cat:"Door Skills", q:`What's the last thing you say in the Open — the line that hands straight off to Qualify, with no pause?`,
+      opts:[`"Are you the homeowner?"`,`"Do you have a few minutes for me to walk you through something?"`,`"Have you had your roof inspected lately?"`,`"Where are you in the insurance process?"`],
+      correct:3,
+      coach:`The Open ends on "Where are you in the insurance process?" — delivered in one breath, no pause. Asking if they're the homeowner, asking for their time, or asking about a past inspection are all real things a rep might say, but none of them is the scripted handoff line — and stopping to ask permission first breaks the no-pause flow.`},
+    {n:2, cat:"Door Skills", q:`A rep skips the warm human beat and opens cold with "Would you like a free inspection?" before introducing themselves. What's wrong with this?`,
+      opts:[`It's only a problem if the homeowner already has insurance`,`It's fine as long as iRoof gets mentioned later`,`It leads with the ask before earning the conversation, which invites an instant no`,`Nothing — getting straight to the point saves time`],
+      correct:2,
+      coach:`The Open runs three beats before handing off — a warm human beat, who you are and why you're there, then the qualifying question — all with no pause. Skipping straight to an ask like this skips the disarming step and invites an instant no, the same failure as leading with a direct roof question.`},
+    {n:3, cat:"Qualifying", q:`A homeowner says a storm already caused a partial payment from their insurer. What's your move?`,
+      opts:[`Ask them to sign a CPF before you've inspected anything`,`Offer to fly the drone and see if you agree with the insurer's assessment`,`Walk away, they're already covered`,`Tell them you can't help since insurance already paid`],
+      correct:1,
+      coach:`Partial payment means the insurer already agreed there's damage. The play is to fly the drone and see if you agree with them — many partials become full replacements once iRoof gets involved.`},
+    {n:4, cat:"Qualifying", q:`Homeowner says: "I've already got a check AND I already picked a roofer." What do you do?`,
+      opts:[`Offer a straight competitive quote — no cost, no pressure`,`Tell them they made a mistake picking someone else`,`Wish them luck and leave — the door is closed`,`Ask to see the check before responding`],
+      correct:0,
+      coach:`Don't walk away from this branch. Earn a shot at the business with a no-cost, no-pressure competitive quote — worst case they've got a second number to compare before they sign.`},
+    {n:5, cat:"Qualifying", q:`A homeowner mentions their claim was denied. What's the right response?`,
+      opts:[`Suggest they contact a lawyer`,`Immediately pivot to a retail quote without inspecting`,`Tell them there's nothing you can do`,`Offer to fly the drone — you have a track record of turning denials into full replacements`],
+      correct:3,
+      coach:`Denials aren't dead ends. You've got a record of helping customers go from denial to full replacement once you get involved — the drone inspection is the next step.`},
+    {n:6, cat:"Permission", q:`A homeowner says "no thanks" to the drone inspection offer. What's the correct next step?`,
+      opts:[`Threaten that their roof will fail without inspection`,`Thank them and leave immediately`,`Ask a second time, reframing around peace of mind at no cost`,`Offer to waive their deductible if they say yes`],
+      correct:2,
+      coach:`Permission always gets a second ask before you walk — reframed around free peace-of-mind, not pressure. Never mention waiving the deductible; that's illegal and never done.`},
+    {n:7, cat:"Inspection / Honesty", q:`What's the honesty standard for documenting damage?`,
+      opts:[`Let the adjuster decide what counts, so photograph everything indiscriminately`,`Document generously — when in doubt, call it damage`,`Document exactly what's there — never manufacture or exaggerate, and say so plainly if there's no damage`,`Only photograph the worst damage to make the case stronger`],
+      correct:2,
+      coach:`The standard is explicit: you document what's there, never manufacture or exaggerate. An adjuster who catches inflated damage stops trusting every claim you bring afterward.`},
+    {n:8, cat:"Inspection / Honesty", q:`Why does the honesty line ("I'm going to show you exactly what I found — good or bad") matter?`,
+      opts:[`It's only used when there's no damage to report`,`It replaces the need to check the attic`,`It's a formality with no real purpose`,`It sets up trust so the review findings are credible, and prevents a homeowner feeling oversold later`],
+      correct:3,
+      coach:`Said early, it disarms the homeowner and makes what you show next credible. A homeowner who feels oversold cancels — real footage never needs exaggeration to land.`},
+    {n:9, cat:"Inspection / Damage ID", q:`Which damage pattern points to hail rather than wind or age?`,
+      opts:[`Curling and cracking shingles`,`Directional creasing along one edge of the roof`,`Random, scattered dark bruises with granules knocked off, no pattern`,`Uniform granule loss across the whole roof`],
+      correct:2,
+      coach:`Hail is random and scattered — no pattern. Wind is directional along edges/ridges. Uniform wear across the whole roof is age, not storm damage — the trap that gets new reps in trouble.`},
+    {n:10, cat:"Inspection / Shot List", q:`The shot list rule of thumb for scope is to document damage where?`,
+      opts:[`On multiple slopes, not just one isolated spot`,`Anywhere the homeowner points`,`Only where hail is visible from the ground`,`Only on the front-facing slope`],
+      correct:0,
+      coach:`The rule of thumb is damage across multiple slopes, not one isolated spot. A single small area found is a scope question — capture it honestly and note it, don't force the pattern.`},
+    {n:11, cat:"Inspection / Measurements", q:`Which tool produces the aerial measurements (squares, dimensions) used to build an estimate?`,
+      opts:[`Roofle`,`iRoofing`,`Xactimate`,`The drone`],
+      correct:1,
+      coach:`The drone documents damage and condition — it does not produce measurements. iRoofing pulls aerial imagery into squares and dimensions separately, when the estimate is built.`},
+    {n:12, cat:"Inspection / Attic", q:`What's the single biggest flag you're checking for in the attic, and why does it matter most?`,
+      opts:[`The color of the insulation`,`Whether the decking is the older spaced type — a re-deck flag that changes the scope and cost of the job`,`Whether the garage door opener still works`,`How many boxes are stored up there`],
+      correct:1,
+      coach:`Spaced decking is the biggest attic flag — it means a re-deck, which materially changes the scope and cost of the job. Water intrusion/rotten wood and compromised trusses are also flags worth noting, but decking type is the one most likely to blindside a claim if the attic gets skipped.`},
+    {n:13, cat:"Inspection / No Damage", q:`When there's little or no damage found, what should you still do before leaving?`,
+      opts:[`Ask for a referral anyway`,`Avoid mentioning it so they don't worry`,`Nothing — just leave`,`Convince them there's damage regardless`],
+      correct:0,
+      coach:`Tell them straight, leave the door open for the future, and ask for the referral anyway — the homeowner you didn't sell still trusts you, and their neighbor may have damage.`},
+    {n:14, cat:"Review / Decision-Maker", q:`At the sit-down qualifier, a homeowner says "it's just me" on the decision. What do you do?`,
+      opts:[`Refuse to present until a second person is confirmed present`,`Accept it at face value and move to the review immediately`,`Skip the review and go straight to the CPF`,`Test it once — ask if there's anyone else who'd want to hear this — before moving on`],
+      correct:3,
+      coach:`"It's just me" doesn't get accepted cleanly. Test it once — asking if there's anyone else who'd want to hear this — then move forward once they hold firm on it.`},
+    {n:15, cat:"Review", q:`Where should the review happen, and why?`,
+      opts:[`In the doorway, so it stays quick`,`Wherever the homeowner is standing when you arrive`,`In the driveway next to the truck`,`At the kitchen or dining table — a flat surface where they can see the screen`],
+      correct:3,
+      coach:`The review needs a flat surface where the homeowner can actually see the footage — kitchen or dining table, not the doorway or a coffee table.`},
+    {n:16, cat:"Review / Close Fork", q:`At the fork after Review, what actually decides which close you run — CPF or retail?`,
+      opts:[`Whether insurance is in play`,`Whether the homeowner qualifies for retail financing`,`How much the estimated repair will cost`,`How much rapport you've built with the homeowner`],
+      correct:0,
+      coach:`One question decides it: is insurance in play? Repair cost, financing eligibility, and rapport all matter elsewhere in the visit, but the fork itself turns on insurance status — insurance leads to the CPF close, no insurance leads to retail, and a denial usually means a return-visit pivot.`},
+    {n:17, cat:"Close / CPF", q:`What does signing the CPF actually commit the homeowner to?`,
+      opts:[`A binding payment obligation regardless of claim outcome`,`Nothing — it's informational only and creates no relationship`,`A same-day cash payment for the inspection`,`Letting iRoof represent them with the insurer; they owe nothing unless the claim is approved`],
+      correct:3,
+      coach:`The CPF authorizes iRoof to work the claim and meet the adjuster, and commits the homeowner to iRoof at the insurance-approved price — but it's not a bill. Nothing is owed unless the claim is approved.`},
+    {n:18, cat:"Close / Claim Filing", q:`Who does the talking when the claim gets called in, and from whose phone?`,
+      opts:[`The rep does the talking, from the homeowner's phone`,`The homeowner does the talking, from the rep's phone`,`The homeowner does the talking, from their own phone, with no rep involvement`,`The rep does the talking, from the rep's phone`],
+      correct:0,
+      critical:true,
+      coach:`The rep does the talking, since reps give correct detail every time — but the call goes out from the homeowner's phone because carriers tie the number to the claim. The rep hands back only if the carrier insists on hearing from the insured.`},
+    {n:19, cat:"Close / CPF Fee", q:`When does the $1,500 CPF fee actually apply?`,
+      opts:[`It's collected upfront at the table, same visit`,`Every time an adjuster is assigned`,`Only if iRoof wins the claim and the homeowner then takes the job to another company or doesn't repair at all`,`Anytime the homeowner signs the CPF`],
+      correct:2,
+      coach:`The fee only ever applies if iRoof wins the claim and the homeowner then hands the job elsewhere (or skips repairs) — it protects the free work done up front. If iRoof does the roof, it never comes into play.`},
+    {n:20, cat:"Close / Money", q:`How much money is collected at the Path A (insurance) close visit?`,
+      opts:[`Nothing — money is collected later at contract signing once the claim is approved`,`A 50% deposit`,`The full deductible`,`The first ACV check`],
+      correct:0,
+      coach:`No money changes hands at the insurance-path close. The deductible and first check are collected later, at contract signing, once the claim is approved.`},
+    {n:21, cat:"Close / Approach", q:`What's the right posture for assuming the close, once the review is done?`,
+      opts:[`Wait silently for the homeowner to bring it up`,`"Here's how we get this taken care of."`,`"So... would you maybe want to move forward?"`,`Ask if they want to think it over first`],
+      correct:1,
+      coach:`Assume the yes and lead them forward — "here's how we get this taken care of." The weak version invites "let me think about it" instead of moving the deal along.`},
+    {n:22, cat:"Retail Close", q:`In the Roofle presentation, what's the correct approach to the three pricing tiers?`,
+      opts:[`Only show "better," since it's the standard shingle`,`Present all three honestly and let the customer choose`,`Push the customer toward "best" for the biggest sale`,`Hide pricing until financing is approved`],
+      correct:1,
+      coach:`Present good/better/best honestly and let the customer choose. The goal is to sell a roof, not push a tier — "better" is the standard grade used on most jobs, but the choice is theirs.`},
+    {n:23, cat:"Retail Close / Credit", q:`A customer asks if applying for financing will hurt their credit. What's the accurate answer?`,
+      opts:[`"The pre-qualification is a soft pull and doesn't affect your score — but once you pick a plan, a hard pull is required by law."`,`"Yes, both checks will lower your score."`,`"We don't run credit checks — Roofle doesn't require one."`,`"No, financing never affects your credit at any point."`],
+      correct:0,
+      critical:true,
+      coach:`Only the pre-qualification is soft. Once a plan is chosen, a hard pull is legally required to formally extend financing. Saying the whole process never affects credit is inaccurate and creates a surprised, upset customer at the hard pull.`},
+    {n:24, cat:"Retail Close / Scheduling", q:`A homeowner wants to move faster than the current 4–6 week schedule. What do you do?`,
+      opts:[`Promise a specific rushed date to close the deal`,`Tell them you'll check with your manager on what's possible — don't promise a date you can't hit`,`Offer a discount if they accept the standard schedule`,`Tell them it's impossible and drop the subject`],
+      correct:1,
+      coach:`Reps don't own the calendar — the sales manager does. Never promise a rushed start date at the table; commit to checking instead.`},
+    {n:25, cat:"Path C / Denial", q:`A claim comes back denied on a return visit. What are the two options you present?`,
+      opts:[`Ask the homeowner to appeal directly with no iRoof involvement`,`Wait six months and refile automatically`,`Fight the denial, or run Roofle for a straight retail price`,`Give up on the account, or refer them to a competitor`],
+      correct:2,
+      coach:`Two clean paths: fight the denial (re-inspection/supplement/second opinion), or pivot to a fresh, voluntary retail agreement via Roofle. The homeowner owes nothing on the claim side either way.`}
+  ];
+
+  // ---------- Category pass thresholds (source: Scoring & Coaching Key) ----------
+  const CATEGORY_THRESHOLD = {
+    "Door Skills": 100, "Qualifying": 80, "Permission": 100, "Inspection / Honesty": 100,
+    "Inspection / Damage ID": 100, "Inspection / Shot List": 100, "Inspection / Measurements": 100,
+    "Inspection / Attic": 100, "Inspection / No Damage": 100, "Review / Decision-Maker": 100,
+    "Review": 100, "Review / Close Fork": 100, "Close / CPF": 100, "Close / Claim Filing": 100,
+    "Close / CPF Fee": 100, "Close / Money": 100, "Close / Approach": 100, "Retail Close": 100,
+    "Retail Close / Credit": 100, "Retail Close / Scheduling": 100, "Path C / Denial": 100
+  };
+  const OVERALL_PASS_PCT = 85;
+
+  // ---------- State ----------
+  let screen = "start";
+  let repName = "";
+  let answers = new Array(QUESTIONS.length).fill(null);
+  let qIndex = 0;
+  let lastResult = null;
+
+  const root = document.getElementById("app");
+
+  function render(){
+    if(screen==="start") root.innerHTML = viewStart();
+    else if(screen==="quiz") root.innerHTML = viewQuiz();
+    else if(screen==="results") root.innerHTML = viewResults(lastResult);
+    bind();
+  }
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  // ---------- Views ----------
+  function brandbar(sub){
+    return `<div class="brandbar no-print">
+      <div class="mark">iR</div>
+      <div>
+        <div class="name">iRoof Outside Sales Training</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }
+
+  function viewStart(){
+    return `<div class="shell">
+      ${brandbar("Module 1 — The Same-Visit Sale")}
+      <div class="card">
+        <h1>Module 1 Knowledge &amp; Judgment Test</h1>
+        <p>25 questions covering the full same-visit sale — from the door to the close. You need 85% overall to pass, and several categories require a perfect score since they cover liability and process steps that can't be run halfway.</p>
+        <label class="field-label" for="rep-name-input">Your name</label>
+        <input type="text" id="rep-name-input" placeholder="First and last name" value="${esc(repName)}"/>
+        <button class="btn btn-primary" id="start-btn">Start Test</button>
+      </div>
+    </div>`;
+  }
+
+  function viewQuiz(){
+    const item = QUESTIONS[qIndex];
+    const pct = Math.round(((qIndex)/QUESTIONS.length)*100);
+    const selected = answers[qIndex];
+    const isLast = qIndex === QUESTIONS.length-1;
+    const canAdvance = selected !== null;
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="card">
+        <div class="progress-row">
+          <span class="count">Question ${qIndex+1} of ${QUESTIONS.length}</span>
+          <span class="count">${pct}% complete</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="eyebrow">${esc(item.cat)}</div>
+        <div class="qtext">${esc(item.q)}</div>
+        <div class="options">
+          ${item.opts.map((o,i)=>`
+            <button class="option ${selected===i?'selected':''}" data-opt="${i}">
+              <span class="letter">${String.fromCharCode(65+i)}</span>
+              <span>${esc(o)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="nav-row">
+          ${qIndex>0 ? `<button class="btn btn-ghost" id="back-btn">Back</button>` : ``}
+          <button class="btn btn-primary" id="next-btn" ${canAdvance? "" : "disabled"}>${isLast? "Finish Test":"Next"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function computeResult(){
+    let overallCorrect = 0;
+    const byCat = {};
+    const missed = [];
+    const criticalMisses = [];
+
+    QUESTIONS.forEach((item, i)=>{
+      if(!byCat[item.cat]) byCat[item.cat] = {total:0, correct:0, critical:false};
+      byCat[item.cat].total++;
+      if(item.critical) byCat[item.cat].critical = true;
+      const isCorrect = answers[i] === item.correct;
+      if(isCorrect){
+        overallCorrect++;
+        byCat[item.cat].correct++;
+      } else {
+        missed.push({n:item.n, cat:item.cat, q:item.q, correctText:item.opts[item.correct], coach:item.coach, critical: !!item.critical});
+        if(item.critical) criticalMisses.push(item.cat);
+      }
+    });
+
+    const overallPct = Math.round((overallCorrect/QUESTIONS.length)*1000)/10;
+    const overallPass = overallPct >= OVERALL_PASS_PCT;
+
+    const categoryResults = Object.keys(byCat).map(cat=>{
+      const c = byCat[cat];
+      const pct = Math.round((c.correct/c.total)*1000)/10;
+      const threshold = CATEGORY_THRESHOLD[cat] !== undefined ? CATEGORY_THRESHOLD[cat] : 100;
+      return {cat, total:c.total, correct:c.correct, pct, threshold, pass: pct>=threshold, critical:c.critical};
+    });
+
+    return {
+      repName,
+      timestamp: new Date().toISOString(),
+      overallCorrect,
+      overallTotal: QUESTIONS.length,
+      overallPct,
+      overallPass,
+      categoryResults,
+      missed,
+      criticalFlag: criticalMisses.length>0,
+      criticalCategories: [...new Set(criticalMisses)]
+    };
+  }
+
+  function viewResults(result){
+    const banner = result.overallPass ?
+      `<div class="result-banner pass"><div class="label">Pass</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct</p></div>` :
+      `<div class="result-banner fail"><div class="label">Not a pass yet</div><div class="score">${result.overallPct}%</div><p class="sub">${result.overallCorrect} of ${result.overallTotal} correct — needs ${OVERALL_PASS_PCT}%+</p></div>`;
+
+    const criticalBlock = result.criticalFlag ?
+      `<div class="critical-flag"><b>Flagged for a manager conversation</b>A miss in a critical category (${result.criticalCategories.map(esc).join(", ")}) needs to be reviewed regardless of overall score — these tie to liability or a claim-filing sequence that has to be followed exactly.</div>` : ``;
+
+    const catRows = result.categoryResults.map(c=>`
+      <tr>
+        <td class="${c.critical?'cat-name-crit':''}">${esc(c.cat)}</td>
+        <td>${c.correct}/${c.total}</td>
+        <td>${c.threshold}%+</td>
+        <td><span class="chip ${c.pass?'pass':'fail'}">${c.pass? "Pass":"Below"}</span></td>
+      </tr>`).join("");
+
+    const missedBlock = result.missed.length===0 ?
+      `<p style="margin-top:6px;">No missed questions — clean run.</p>` :
+      result.missed.map(m=>`
+        <div class="missed-item">
+          <div class="mi-cat">Q${m.n} · ${esc(m.cat)}${m.critical? ' · Critical':''}</div>
+          <div class="mi-q">${esc(m.q)}</div>
+          <div class="mi-correct">Correct answer: ${esc(m.correctText)}</div>
+          <div class="mi-coach">${esc(m.coach)}</div>
+        </div>`).join("");
+
+    return `<div class="shell">
+      ${brandbar(esc(repName))}
+      <div class="print-header">
+        <div class="t1">iRoof Outside Sales Training — Module 1 Test Results</div>
+        <div class="t2">${esc(result.repName || "(no name entered)")} · ${new Date(result.timestamp).toLocaleString()}</div>
+      </div>
+      <div class="card">
+        ${banner}
+        ${criticalBlock}
+        <div class="section-title">Category breakdown</div>
+        <table class="cat-table">
+          <thead><tr><th>Category</th><th>Score</th><th>Required</th><th>Result</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div class="section-title">Where to improve</div>
+        ${missedBlock}
+      </div>
+      <div class="btn-row no-print" style="margin-top:18px;">
+        <button class="btn btn-primary" id="print-btn">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="restart-btn">Take Test Again</button>
+      </div>
+    </div>`;
+  }
+
+  function bind(){
+    const startBtn = document.getElementById("start-btn");
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        const input = document.getElementById("rep-name-input");
+        repName = input.value.trim();
+        answers = new Array(QUESTIONS.length).fill(null);
+        qIndex = 0;
+        screen = "quiz";
+        render();
+      };
+    }
+
+    document.querySelectorAll(".option").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute("data-opt"),10);
+        answers[qIndex] = i;
+        render();
+      };
+    });
+    const nextBtn = document.getElementById("next-btn");
+    if(nextBtn){
+      nextBtn.onclick = ()=>{
+        if(qIndex === QUESTIONS.length-1){
+          lastResult = computeResult();
+          screen = "results";
+          render();
+        } else {
+          qIndex++;
+          render();
+        }
+      };
+    }
+    const backBtn = document.getElementById("back-btn");
+    if(backBtn){
+      backBtn.onclick = ()=>{ qIndex--; render(); };
+    }
+    const restartBtn = document.getElementById("restart-btn");
+    if(restartBtn){
+      restartBtn.onclick = ()=>{ screen="start"; render(); };
+    }
+    const printBtn = document.getElementById("print-btn");
+    if(printBtn){
+      printBtn.onclick = ()=>{ window.print(); };
+    }
+  }
+
+  render();
+})();
+</script>
